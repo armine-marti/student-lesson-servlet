@@ -1,31 +1,27 @@
 package org.example.studentLessonServlet.model;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class Student {
-
+public class User {
     private int id;
     private String name;
     private String surname;
     private String email;
-    private int age;
-    private Lesson lesson;
-    private User user;
+    private String password;
+    private UserType userType;
 
-    public Student(String name, String surname, String email, int age, Lesson lesson, User user) {
+    public User(String name, String surname, String email, String password, UserType userType) {
         this.name = name;
         this.surname = surname;
         this.email = email;
-        this.age = age;
-        this.lesson = lesson;
-        this.user = user;
+        this.password = password;
+        this.userType = userType;
     }
 }

@@ -5,6 +5,7 @@ import org.example.studentLessonServlet.model.Lesson;
 import org.example.studentLessonServlet.model.Student;
 import org.example.studentLessonServlet.service.LessonService;
 import org.example.studentLessonServlet.service.StudentService;
+import org.example.studentLessonServlet.service.UserService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,14 +19,14 @@ import java.util.List;
 public class AddStudentServlet extends HttpServlet {
     private StudentService studentService = new StudentService();
     private LessonService lessonService = new LessonService();
-
+    private UserService userService = new UserService();
 
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Lesson> lessons =  lessonService.getAllLessons();
+        List<Lesson> lessons = lessonService.getAllLessons();
         req.setAttribute("lessons", lessons);
-        req.getRequestDispatcher("/addStudent.jsp").forward(req, resp);
+        req.getRequestDispatcher("/WEB-INF/addStudent.jsp").forward(req, resp);
     }
 
     @SneakyThrows
@@ -34,20 +35,24 @@ public class AddStudentServlet extends HttpServlet {
         String name = req.getParameter("name");
         String surname = req.getParameter("surname");
         String email = req.getParameter("email");
-        int birthYear = Integer.parseInt(req.getParameter("age"));  // Параметр по-прежнему называется 'age'
+        int birthYear = Integer.parseInt(req.getParameter("age"));
         int age = studentService.calculateAge(birthYear);
-
-        String lessonId = req.getParameter("lesson_id");
-
+        int lesson = Integer.parseInt(req.getParameter("lesson_id"));
+        int userId = Integer.parseInt(req.getParameter("user_id"));
+        if (studentService.emailCheck(email)) {
+            req.setAttribute("msg", "A student with this email already exists.");
+            req.setAttribute("lessons", lessonService.getAllLessons());
+            req.setAttribute("student", Student.builder());
+        }
         Student student = Student.builder()
                 .name(name)
                 .surname(surname)
                 .email(email)
                 .age(age)
-                .lesson(lessonService.getLessonById(Integer.parseInt(lessonId)))
+                .lesson(lessonService.getLessonById(lesson))
+                .user(userService.getUserById(userId))
                 .build();
-
         studentService.add(student);
-        resp.sendRedirect("/students");
+        resp.sendRedirect("/WEB-INF/students");
     }
 }

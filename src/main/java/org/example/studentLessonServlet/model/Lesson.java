@@ -18,12 +18,14 @@ public class Lesson {
     private int duration;
     private String lecturerName;
     private double price;
+    private User user;
 
 
-    public Lesson(String name, int duration, String lecturerName, double price) {
+    public Lesson(String name, int duration, String lecturerName, double price, User user) {
         this.name = name;
         this.duration = duration;
         this.lecturerName = lecturerName;
         this.price = price;
+        this.user = user;
     }
 }

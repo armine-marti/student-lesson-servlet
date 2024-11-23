@@ -1,5 +1,6 @@
 <%@ page import="org.example.studentLessonServlet.model.Lesson" %>
 <%@ page import="java.util.List" %>
+<%@ page import="org.example.studentLessonServlet.model.User" %>
 <%--
   Created by IntelliJ IDEA.
   User: alexa
@@ -10,13 +11,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
+    <a href="/welcomeAdmin">Main page</a>
     <title>
         Lessons
     </title>
 </head>
 <body>
-<h2>Lessons:</h2> <a href="/addLesson">Add Lesson</a>
-
+<h2>Lessons:</h2> <a href="/addLesson">Add lesson</a>
+<% User user = (User) session.getAttribute("user"); %>
 <% List<Lesson> lessons = (List<Lesson>) request.getAttribute("lessons"); %>
 
 <table border="1">
@@ -26,6 +28,7 @@
         <th>duration (minutes)</th>
         <th>lecturer name</th>
         <th>price (£)</th>
+        <th>added by</th>
         <th>actions</th>
     </tr>
 
@@ -40,6 +43,8 @@
         <td><%= lesson.getLecturerName() %>
         </td>
         <td><%= lesson.getPrice() %>
+        </td>
+        <td><%= lesson.getUser().getName() %> <%= lesson.getUser().getSurname() %>
         </td>
         <td><a href="/deleteLesson?id=<%= lesson.getId() %>">Delete</a> / <a
                 href="/editLesson?id=<%= lesson.getId() %>">Edit</a></td>

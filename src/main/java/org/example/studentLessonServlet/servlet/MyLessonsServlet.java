@@ -1,9 +1,9 @@
 package org.example.studentLessonServlet.servlet;
 
 import org.example.studentLessonServlet.model.Lesson;
-import org.example.studentLessonServlet.model.Student;
+import org.example.studentLessonServlet.model.User;
 import org.example.studentLessonServlet.service.LessonService;
-import org.example.studentLessonServlet.service.StudentService;
+import org.example.studentLessonServlet.service.UserService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,15 +13,19 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/students")
-public class StudentServlet extends HttpServlet {
-    private StudentService studentService = new StudentService();
+@WebServlet("/myLessons")
+public class MyLessonsServlet extends HttpServlet {
+
+    private LessonService lessonService = new LessonService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Student> allStudents = studentService.getAllStudents();
-        req.setAttribute("students", allStudents);
-        req.getRequestDispatcher("/students.jsp").forward(req, resp);
+        User user = (User) req.getSession().getAttribute("user");
+
+        List<Lesson> myLessons = lessonService.getLessonsByUser(user);
+        req.setAttribute("myLessons", myLessons);
+        req.getRequestDispatcher("/WEB-INF/myLessons.jsp").forward(req, resp);
 
     }
 }
+

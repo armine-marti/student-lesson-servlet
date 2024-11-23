@@ -1,4 +1,6 @@
 <%@ page import="org.example.studentLessonServlet.model.Lesson" %>
+<%@ page import="org.example.studentLessonServlet.model.UserType" %>
+<%@ page import="org.example.studentLessonServlet.model.User" %>
 <%--
   Created by IntelliJ IDEA.
   User: alexa
@@ -9,12 +11,31 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
+    <% if (request.getAttribute("msg") != null) { %>
+    <h3><%= request.getAttribute("msg") %>
+    </h3>
+    <% } %>
     <title>Edit Lesson</title>
 </head>
 <body>
-<% Lesson lesson = (Lesson) request.getAttribute("lesson"); %>
+<%
+    User user = (User) request.getAttribute("user");
+    Lesson lesson = (Lesson) request.getAttribute("lesson");
+%>
+
 <h1>Edit Lesson</h1>
-<a href="/lessons">Lessons</a> | <a href="index.jsp">Main</a> <br>
+
+<% if (user != null) { %>
+<% if (user.getUserType() == UserType.ADMIN) { %>
+<a href="/lessons">Lessons</a>
+<% } else if (user.getUserType() == UserType.USER) { %>
+<a href="/myLessons">Lessons</a>
+<% } %>
+<% } else { %>
+<p>Error: User not found or not logged in.</p>
+<% } %>
+
+| <a href="index.jsp">Main</a> <br>
 
 <form action="/editLesson" method="post">
     <input type="hidden" name="id" value="<%=lesson.getId()%>"> <br>

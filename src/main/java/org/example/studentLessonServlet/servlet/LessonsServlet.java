@@ -1,6 +1,8 @@
 package org.example.studentLessonServlet.servlet;
 
 import org.example.studentLessonServlet.model.Lesson;
+import org.example.studentLessonServlet.model.User;
+import org.example.studentLessonServlet.model.UserType;
 import org.example.studentLessonServlet.service.LessonService;
 
 import javax.servlet.ServletException;
@@ -12,14 +14,14 @@ import java.io.IOException;
 import java.util.List;
 
 @WebServlet("/lessons")
-public class LessonServlet extends HttpServlet {
+public class LessonsServlet extends HttpServlet {
     private LessonService lessonService = new LessonService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<Lesson> allLessons = lessonService.getAllLessons();
         req.setAttribute("lessons", allLessons);
-        req.getRequestDispatcher("/lessons.jsp").forward(req, resp);
+        req.getRequestDispatcher("/WEB-INF/lessons.jsp").forward(req, resp);
 
     }
 }

@@ -9,6 +9,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
+    <a href="/welcomeAdmin">Main page</a>
     <title>Add Student</title>
 </head>
 <body>
@@ -24,10 +25,11 @@
     LESSON: <select name="lesson_id">
     <% if (lessons != null && !lessons.isEmpty()) { %>
     <% for (Lesson lesson : lessons) { %>
-    <option value="<%=lesson.getId()%>"><%=lesson.getName()%></option>
+    <option value="<%=lesson.getId()%>"><%=lesson.getName()%>
+    </option>
     <% } %>
     <% } else { %>
-    <option disabled>No lessons </option>
+    <option disabled>No lessons</option>
     <% } %>
 </select><br>
     <input type="submit" value="ADD">

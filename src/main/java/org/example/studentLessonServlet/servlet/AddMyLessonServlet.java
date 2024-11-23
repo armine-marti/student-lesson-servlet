@@ -4,8 +4,8 @@ import lombok.SneakyThrows;
 import org.example.studentLessonServlet.model.Lesson;
 import org.example.studentLessonServlet.model.Student;
 import org.example.studentLessonServlet.model.User;
-import org.example.studentLessonServlet.model.UserType;
 import org.example.studentLessonServlet.service.LessonService;
+import org.example.studentLessonServlet.service.UserService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,60 +14,59 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/editLesson")
-public class EditLessonServlet extends HttpServlet {
+@WebServlet("/addMyLesson")
+public class AddMyLessonServlet extends HttpServlet {
     private LessonService lessonService = new LessonService();
+
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User user = (User) req.getSession().getAttribute("user");
         req.setAttribute("user", user);
-        int lessonId = Integer.parseInt(req.getParameter("id"));
-        Lesson lesson = lessonService.getLessonById(lessonId);
-        req.setAttribute("lesson", lesson);
-        req.getRequestDispatcher("/WEB-INF/editLesson.jsp").forward(req, resp);
+        req.getRequestDispatcher("/WEB-INF/addMyLesson.jsp").forward(req, resp);
     }
 
-    @SneakyThrows
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         User user = (User) req.getSession().getAttribute("user");
+        req.setAttribute("user", user);
+        if (user == null) {
+            resp.sendRedirect("/login");
+            return;
+        }
         int loggedId = user.getId();
         req.setAttribute("user", user);
-        String id = req.getParameter("id");
+
         String name = req.getParameter("name");
         String duration = req.getParameter("duration");
-        String lecturerName = req.getParameter("lecturer_name");
+        String lecturerName = req.getParameter("lecturerName");
         String price = req.getParameter("price");
-        if (lessonService.sameLessonCheckEdit(name, loggedId, Integer.parseInt(id))) {
+        if (name == null || name.isEmpty() || duration == null || duration.isEmpty() ||
+                lecturerName == null || lecturerName.isEmpty() || price == null || price.isEmpty()) {
+            req.setAttribute("msg", "All fields are required.");
+            req.getRequestDispatcher("/WEB-INF/addMyLesson.jsp").forward(req, resp);
+            return;
+        }
+        if (lessonService.sameLessonCheck(name, loggedId)) {
             req.setAttribute("msg", "Same lesson by the same user already exists.");
             req.setAttribute("lessons", lessonService.getAllLessons());
-            req.setAttribute("lesson", Lesson.builder()
-                    .id(Integer.parseInt(id))
+            req.getRequestDispatcher("/WEB-INF/addMyLesson.jsp").forward(req, resp);
+            return;
+        }
+        try {
+            Lesson lesson = Lesson.builder()
                     .name(name)
                     .duration(Integer.parseInt(duration))
                     .lecturerName(lecturerName)
                     .price(Double.parseDouble(price))
                     .user(user)
-                    .build());
-            req.getRequestDispatcher("/WEB-INF/editLesson.jsp").forward(req, resp);
-            return;
-        }
-        Lesson lesson = Lesson.builder()
-                .id(Integer.parseInt(id))
-                .name(name)
-                .duration(Integer.parseInt(duration))
-                .lecturerName(lecturerName)
-                .price(Double.parseDouble(price))
-                .user(user)
-                .build();
-        lessonService.updateLesson(lesson);
-        if (user.getUserType() == UserType.ADMIN) {
-            resp.sendRedirect("/lessons");
-        }
-        if (user.getUserType() == UserType.USER) {
+                    .build();
+            lessonService.add(lesson);
             resp.sendRedirect("/myLessons");
+        } catch (NumberFormatException e) {
+            req.setAttribute("msg", "Invalid number  for duration or price.");
+            req.getRequestDispatcher("/WEB-INF/addMyLesson.jsp").forward(req, resp);
         }
     }
 }
+
